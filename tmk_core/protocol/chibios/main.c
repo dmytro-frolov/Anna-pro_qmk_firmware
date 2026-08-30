@@ -227,6 +227,10 @@ int main(void) {
 #    ifdef VISUALIZER_ENABLE
             visualizer_suspend();
 #    endif
+            // Ensure all keys are released before arming wakeup detection
+            while (suspend_wakeup_condition()) {
+                suspend_power_down();
+            }
             while (USB_DRIVER.state == USB_SUSPENDED) {
                 /* Do this in the suspended state */
 #    ifdef SERIAL_LINK_ENABLE
@@ -236,7 +240,11 @@ int main(void) {
                 /* Remote wakeup */
                 if (suspend_wakeup_condition()) {
                     usbWakeupHost(&USB_DRIVER);
-                    restart_usb_driver(&USB_DRIVER);
+                    wait_ms(15);
+#    ifdef USBCSR_GENRSM
+                    USB->CSR &= ~USBCSR_GENRSM;
+#    endif
+                    wait_ms(15);
                 }
             }
             /* Woken up */
