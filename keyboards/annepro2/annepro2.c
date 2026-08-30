@@ -90,13 +90,22 @@ void OVERRIDE keyboard_post_init_kb(void) {
 
 void OVERRIDE matrix_init_kb(void) { matrix_init_user(); }
 
+static bool is_suspended = false;
+
 void OVERRIDE suspend_power_down_kb(void) {
-    annepro2LedDisable();
+    if (!is_suspended) {
+        is_suspended = true;
+        annepro2LedDisable();
+    }
     suspend_power_down_user();
 }
 
 void OVERRIDE suspend_wakeup_init_kb(void) {
-    annepro2LedEnable();
+    if (is_suspended) {
+        is_suspended = false;
+        while (!sdGetWouldBlock(&SD0)) sdGet(&SD0);
+        annepro2LedEnable();
+    }
     suspend_wakeup_init_user();
 }
 

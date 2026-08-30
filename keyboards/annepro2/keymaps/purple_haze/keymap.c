@@ -86,10 +86,8 @@ void matrix_init_user(void) {}
 
 void matrix_scan_user(void) {}
 
-/* Restore active profile and power when waking up from USB sleep */
-void suspend_wakeup_init_user(void) {
-    annepro2LedEnable();
-}
+/* Hook called after waking up from USB sleep */
+void suspend_wakeup_init_user(void) {}
 
 /* Keyboard post-initialization (sets default profile on cold startup) */
 void keyboard_post_init_user(void) {
