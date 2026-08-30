@@ -5,6 +5,7 @@
 #include "spi_master.h"
 #include "qmk_ap2_led.h"
 #include "protocol.h"
+#include "openrgb.h"
 
 static const SerialConfig ledUartInitConfig = {
     .speed = 115200,
@@ -79,12 +80,25 @@ void OVERRIDE keyboard_post_init_kb(void) {
     // loop to clear out receive buffer from ble wakeup
     while (!sdGetWouldBlock(&SD1)) sdGet(&SD1);
 
+    annepro2LedEnable();
     annepro2LedGetStatus();
+
+    openrgb_init();
 
     keyboard_post_init_user();
 }
 
 void OVERRIDE matrix_init_kb(void) { matrix_init_user(); }
+
+void OVERRIDE suspend_power_down_kb(void) {
+    annepro2LedDisable();
+    suspend_power_down_user();
+}
+
+void OVERRIDE suspend_wakeup_init_kb(void) {
+    annepro2LedEnable();
+    suspend_wakeup_init_user();
+}
 
 void matrix_scan_kb() {
     // if there's stuff on the ble serial buffer
@@ -128,23 +142,22 @@ bool OVERRIDE process_record_kb(uint16_t keycode, keyrecord_t *record) {
         switch (keycode) {
             case KC_AP2_BT1:
                 annepro2_ble_broadcast(0);
-                /* FIXME: This hardcodes col/row position */
-                annepro2LedBlink(0, 1, blue, 8, 50);
+                annepro2LedBlink(record->event.key.row, record->event.key.col, blue, 8, 50);
                 return false;
 
             case KC_AP2_BT2:
                 annepro2_ble_broadcast(1);
-                annepro2LedBlink(0, 2, blue, 8, 50);
+                annepro2LedBlink(record->event.key.row, record->event.key.col, blue, 8, 50);
                 return false;
 
             case KC_AP2_BT3:
                 annepro2_ble_broadcast(2);
-                annepro2LedBlink(0, 3, blue, 8, 50);
+                annepro2LedBlink(record->event.key.row, record->event.key.col, blue, 8, 50);
                 return false;
 
             case KC_AP2_BT4:
                 annepro2_ble_broadcast(3);
-                annepro2LedBlink(0, 4, blue, 8, 50);
+                annepro2LedBlink(record->event.key.row, record->event.key.col, blue, 8, 50);
                 return false;
 
             case KC_AP2_USB:
@@ -156,34 +169,41 @@ bool OVERRIDE process_record_kb(uint16_t keycode, keyrecord_t *record) {
                 return false;
 
             case KC_AP_LED_OFF:
+                openrgb_direct_disable();
                 annepro2LedDisable();
                 break;
 
             case KC_AP_LED_ON:
-                if (annepro2LedStatus.matrixEnabled) {
-                    annepro2LedNextProfile();
-                } else {
-                    annepro2LedEnable();
-                }
+                openrgb_direct_disable();
+                annepro2LedEnable();
+                annepro2LedNextProfile();
                 annepro2LedResetForegroundColor();
                 break;
 
             case KC_AP_LED_NEXT_PROFILE:
+                openrgb_direct_disable();
+                annepro2LedEnable();
                 annepro2LedNextProfile();
                 annepro2LedResetForegroundColor();
                 break;
 
             case KC_AP_LED_PREV_PROFILE:
+                openrgb_direct_disable();
+                annepro2LedEnable();
                 annepro2LedPrevProfile();
                 annepro2LedResetForegroundColor();
                 break;
 
             case KC_AP_LED_NEXT_INTENSITY:
+                openrgb_direct_disable();
+                annepro2LedEnable();
                 annepro2LedNextIntensity();
                 annepro2LedResetForegroundColor();
                 return false;
 
             case KC_AP_LED_SPEED:
+                openrgb_direct_disable();
+                annepro2LedEnable();
                 annepro2LedNextAnimationSpeed();
                 annepro2LedResetForegroundColor();
                 return false;

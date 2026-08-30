@@ -4,6 +4,7 @@ SRC = \
 	hardfault_handler.c \
 	annepro2_ble.c \
 	qmk_ap2_led.c \
+	openrgb.c \
 	protocol.c
 
 ifeq ($(strip $(ANNEPRO2_EEPROM)), yes)
@@ -24,7 +25,7 @@ MCU_STARTUP = ht32f523x2
 
 BOARD = ANNEPRO2_C18
 
-OPT_DEFS = -Wno-unused-function -fdump-rtl-dfinish -fstack-usage
+OPT_DEFS += -Wno-unused-function -Wno-misleading-indentation -fdump-rtl-dfinish -fstack-usage
 #EXTRALDFLAGS = -Wl,--print-memory-usage
 
 # Options

@@ -24,6 +24,8 @@ typedef union {
 
 /* Local copy of ledMask, used to override colors on the board */
 extern annepro2Led_t ledMask[KEY_COUNT];
+/* Local copy of ledColors, used for direct host control / base colors */
+extern annepro2Led_t ledColors[KEY_COUNT];
 
 /* Handle incoming messages */
 extern void ledCommandCallback(const message_t *msg);
@@ -38,6 +40,13 @@ void annepro2LedPrevProfile(void);
 void annepro2LedNextIntensity(void);
 void annepro2LedNextAnimationSpeed(void);
 void annepro2LedForwardKeypress(uint8_t row, uint8_t col);
+
+/* Manual control (OpenRGB / direct host control) */
+void annepro2LedSetManual(uint8_t manual);
+void annepro2LedColorSetKey(uint8_t row, uint8_t col, annepro2Led_t color);
+void annepro2LedColorSetRow(uint8_t row);
+void annepro2LedColorSetAll(void);
+void annepro2LedColorSetMono(const annepro2Led_t color);
 
 /* Set single key to a given color; alpha controls which is displayed */
 void annepro2LedMaskSetKey(uint8_t row, uint8_t col, annepro2Led_t color);

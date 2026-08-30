@@ -6,6 +6,7 @@
 #include "protocol.h"
 
 annepro2Led_t       ledMask[KEY_COUNT];
+annepro2Led_t       ledColors[KEY_COUNT];
 annepro2LedStatus_t annepro2LedStatus;
 
 void ledCommandCallback(const message_t *msg) {
@@ -53,6 +54,30 @@ void annepro2LedNextAnimationSpeed() { protoTx(CMD_LED_NEXT_ANIMATION_SPEED, NUL
 
 void annepro2LedPrevProfile() { protoTx(CMD_LED_PREV_PROFILE, NULL, 0, 3); }
 
+void annepro2LedSetManual(uint8_t manual) { protoTx(CMD_LED_SET_MANUAL, &manual, sizeof(manual), 1); }
+
+void annepro2LedColorSetKey(uint8_t row, uint8_t col, annepro2Led_t color) {
+    uint8_t payload[] = {row, col, color.p.blue, color.p.green, color.p.red, color.p.alpha};
+    protoTx(CMD_LED_COLOR_SET_KEY, payload, sizeof(payload), 1);
+}
+
+void annepro2LedColorSetRow(uint8_t row) {
+    uint8_t payload[NUM_COLUMN * sizeof(annepro2Led_t) + 1];
+    payload[0] = row;
+    memcpy(payload + 1, &ledColors[ROWCOL2IDX(row, 0)], sizeof(*ledColors) * NUM_COLUMN);
+    protoTx(CMD_LED_COLOR_SET_ROW, payload, sizeof(payload), 1);
+}
+
+void annepro2LedColorSetAll(void) {
+    for (int row = 0; row < NUM_ROW; row++) {
+        annepro2LedColorSetRow(row);
+    }
+}
+
+void annepro2LedColorSetMono(const annepro2Led_t color) {
+    protoTx(CMD_LED_COLOR_SET_MONO, (uint8_t *)&color, sizeof(color), 1);
+}
+
 void annepro2LedMaskSetKey(uint8_t row, uint8_t col, annepro2Led_t color) {
     uint8_t payload[] = {row, col, color.p.blue, color.p.green, color.p.red, color.p.alpha};
     protoTx(CMD_LED_MASK_SET_KEY, payload, sizeof(payload), 1);
@@ -63,7 +88,7 @@ void annepro2LedMaskSetRow(uint8_t row) {
     uint8_t payload[NUM_COLUMN * sizeof(annepro2Led_t) + 1];
     payload[0] = row;
     memcpy(payload + 1, &ledMask[ROWCOL2IDX(row, 0)], sizeof(*ledMask) * NUM_COLUMN);
-    protoTx(CMD_LED_MASK_SET_KEY, payload, sizeof(payload), 1);
+    protoTx(CMD_LED_MASK_SET_ROW, payload, sizeof(payload), 1);
 }
 
 /* Synchronize all rows */
