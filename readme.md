@@ -29,16 +29,22 @@ This fork introduces host-controlled RGB integration with **OpenRGB** and severa
 ### 3. Non-Intrusive Local Control Preservation
 - **Hardware Hotkey Priority**: Pressing any onboard lighting hotkey (`FN + 9`, `FN + 0`, `FN + -`, `FN + +`, brightness, speed) instantly yields host control back to the keyboard's internal animated profiles without needing a reboot.
 
-### 4. Modern Toolchain Compatibility
+### 4. Custom Keymap: `purple_haze`
+- **macOS Instant Sleep**: `Option + Command + FN + ~` sends native `KC_MEDIA_EJECT` sleep command to put macOS immediately to sleep.
+- **Smart USB Sleep**: Keyboard automatically turns off all LED power rails on USB suspend (when host sleeps) and restores previous active profile upon wake-up.
+- **Navigation & Media Layer (FN1)**: Dedicated navigation (`Home`, `End`, `PgUp`, `PgDn`), full media controls (Play/Pause, Next/Prev track, Volume, Brightness), and quote helper `>`.
+- **Bluetooth & Layer (FN2)**: Quick switching between Bluetooth profiles 1–4, directional arrow cluster, and onboard backlight effect selectors.
+
+### 5. Modern Toolchain Compatibility
 - **ARM GCC 14+ Ready**: Compiler flag tuning (`-Wno-misleading-indentation`, `-DPORT_IGNORE_GCC_VERSION_CHECK=1`) for building cleanly with modern Arm GNU toolchains.
 
 ### Quick Build & Flash
 ```bash
-# Build C18 (HT32F52352) or C15 (HT32F52342)
-make annepro2/c18:default
+# Build purple_haze keymap for C18 (HT32F52352) or C15 (HT32F52342)
+make annepro2/c18:purple_haze
 
 # Flash to keyboard (put in IAP mode by holding ESC while plugging in USB)
-annepro2_tools --boot annepro2_c18_default.bin
+annepro2_tools --boot annepro2_c18_purple_haze.bin
 ```
 
 ---
