@@ -89,10 +89,9 @@ void matrix_scan_user(void) {}
 /* Hook called after waking up from USB sleep */
 void suspend_wakeup_init_user(void) {}
 
-/* Keyboard post-initialization (sets default profile on cold startup) */
+/* Keyboard post-initialization */
 void keyboard_post_init_user(void) {
     annepro2LedEnable();
-    annepro2LedSetProfile(0);
 }
 
 /* Layer indicator colors */
